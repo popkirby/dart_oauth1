@@ -22,8 +22,9 @@ class OAuth1 {
   String _nonce;
 
 
-  OAuth1(this.method, dynamic uri, this.consumerKey, this.consumerSecret, [this.token = '', this.tokenSecret='']): parameters = {
-  }, _timestamp = (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toInt().toString() {
+  OAuth1(this.method, dynamic uri, this.consumerKey, this.consumerSecret, [this.token = '', this.tokenSecret=''])
+      : parameters = {},
+        _timestamp = (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toInt().toString() {
 
     if (uri is Uri) {
       this.uri = uri;
@@ -62,8 +63,7 @@ class OAuth1 {
   String get _signatureKey => '${consumerSecret}&${tokenSecret}';
 
   String get _signatureValue {
-    var sortedKeys = parameters.keys.toList()
-      ..sort();
+    var sortedKeys = parameters.keys.toList()..sort();
     var tmp = [];
 
     sortedKeys.forEach((key) => tmp.add('${key}=${parameters[key]}'));
@@ -73,7 +73,11 @@ class OAuth1 {
 
   void _initAuthParams() {
     parameters = {
-      'oauth_consumer_key': consumerKey, 'oauth_timestamp': _timestamp, 'oauth_nonce': _nonce, 'oauth_signature_method': 'HMAC-SHA1', 'oauth_version': OAuth1.VERSION
+      'oauth_consumer_key': consumerKey,
+      'oauth_timestamp': _timestamp,
+      'oauth_nonce': _nonce,
+      'oauth_signature_method': 'HMAC-SHA1',
+      'oauth_version': OAuth1.VERSION
     };
 
     if (token != '') parameters['oauth_token'] = token;

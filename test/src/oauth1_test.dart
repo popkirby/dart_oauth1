@@ -7,7 +7,8 @@ void oauth1_test() {
   test('valid signature', () {
     var oauth1 = new OAuth1('GET', 'http://example.com/test', 'consumerkey', 'consumersecret');
     oauth1.addParameters({
-      'oauth_timestamp': '1000', 'oauth_nonce': '2000'
+      'oauth_timestamp': '1000',
+      'oauth_nonce': '2000'
     });
 
     oauth1.addParametersFromString('param1=value1&param2=value2');
