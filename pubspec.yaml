@@ -1,0 +1,5 @@
+name: dart_oauth1
+dependencies:
+  crypto: any
+dev_dependencies:
+  unittest: any
