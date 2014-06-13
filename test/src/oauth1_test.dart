@@ -22,4 +22,3 @@ void oauth1_test() {
     expect(oauth1.header.toString(), equals(oauth1.header.toString()));
   });
 }
-

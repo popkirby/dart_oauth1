@@ -26,12 +26,18 @@ class OAuth1 {
       : parameters = {},
         _timestamp = (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toInt().toString() {
 
+    String getNonce() {
+      var sha1 = new SHA1();
+      sha1.add(new DateTime.now().millisecondsSinceEpoch.toString().codeUnits);
+      return new String.fromCharCodes(sha1.close());
+    }
+
     if (uri is Uri) {
       this.uri = uri;
     } else {
       this.uri = Uri.parse(uri);
     }
-    _nonce = _getNonce();
+    _nonce = getNonce();
     _initAuthParams();
   }
 
@@ -90,10 +96,4 @@ abstract class OAuth1Header {
   OAuth1Header(this.parameters);
 
   String toString();
-}
-
-String _getNonce() {
-  var sha1 = new SHA1();
-  sha1.add(new DateTime.now().millisecondsSinceEpoch.toString().codeUnits);
-  return new String.fromCharCodes(sha1.close());
 }
