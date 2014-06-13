@@ -6,7 +6,6 @@
  */
 library oauth1;
 
-import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
 part 'src/oauth1.dart';
