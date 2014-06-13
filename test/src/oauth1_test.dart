@@ -13,12 +13,18 @@ void oauth1_test() {
 
     oauth1.addParametersFromString('param1=value1&param2=value2');
 
-    expect(oauth1.signature, equals('PiiQpOG0uyWFKgCnXxeDGFMGMqc='));
+    expect(oauth1.header.sign(), equals('PiiQpOG0uyWFKgCnXxeDGFMGMqc='));
   });
 
   test('header must returns same value', () {
     var oauth1 = new OAuth1('GET', 'http://example.com/test', 'consumerkey', 'consumersecret');
 
     expect(oauth1.header.toString(), equals(oauth1.header.toString()));
+  });
+
+  test('header should start with \'OAuth\'', () {
+    var oauth1 = new OAuth1('GET', 'http://example.com/test', 'consumerkey', 'consumersecret');
+
+    expect(oauth1.header.toString(), startsWith('OAuth'));
   });
 }

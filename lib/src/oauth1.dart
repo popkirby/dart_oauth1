@@ -7,12 +7,19 @@ part of oauth1;
  * Simple OAuth 1.0a header generator.
  * Only supports HMAC-SHA1 signature method now.
  */
-class OAuth1 {
-
+abstract class OAuth1 {
   /**
    * version of OAuth, now only 1.0.
    */
   static const VERSION = '1.0';
+
+  static const OAUTH_CONSUMER_KEY = 'oauth_consumer_key';
+  static const OAUTH_TOKEN = 'oauth_token';
+  static const OAUTH_TIMESTAMP = 'oauth_timestamp';
+  static const OAUTH_NONCE = 'oauth_nonce';
+  static const OAUTH_SIGNATURE_METHOD = 'oauth_signature_method';
+  static const OAUTH_VERSION = 'oauth_version';
+  static const OAUTH_SIGNATURE = 'oauth_signature';
 
   /**
    * Gets and sets the consumer key. The value of this property will reflect
@@ -39,6 +46,16 @@ class OAuth1 {
   String tokenSecret;
 
   /**
+   * Gets the timestamp.
+   */
+  String get timestamp;
+
+  /**
+   * Gets the nonce.
+   */
+  String get nonce;
+
+  /**
    * Gets and sets the method for connection.
    */
   String method;
@@ -53,82 +70,66 @@ class OAuth1 {
    */
   Map<String, String> get parameters;
 
-  String _timestamp;
-  String _nonce;
+  /**
+   * Gets the [OAuth1Header] instance for OAuth connection.
+   * The value will be used in 'Authorization' header.
+   */
+  OAuth1Header get header;
 
-
-  OAuth1(this.method, dynamic uri, this.consumerKey, this.consumerSecret, [this.token = '', this.tokenSecret=''])
-      : parameters = {},
-        _timestamp = (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toInt().toString() {
-
-    String getNonce() {
-      var sha1 = new SHA1();
-      sha1.add(new DateTime.now().millisecondsSinceEpoch.toString().codeUnits);
-      return new String.fromCharCodes(sha1.close());
-    }
-
-    if (uri is Uri) {
-      this.uri = uri;
-    } else {
-      this.uri = Uri.parse(uri);
-    }
-    _nonce = getNonce();
-    _initAuthParams();
+  factory OAuth1(String method, uri, String consumerKey, String consumerSecret, [String token, String tokenSecret]) {
+    return new _OAuth1(method, uri, consumerKey, consumerSecret, token, tokenSecret);
   }
 
-  void addParameter(String key, String value) {
-    parameters[key] = value;
-  }
+  /**
+   * Add a parameter for OAuth connection.
+   */
+  void addParameter(String key, String value);
 
-  void addParameters(Map<String, String> params) => parameters.addAll(params);
+  /**
+   * Add some parameters for OAuth connection from a Map.
+   */
+  void addParameters(Map<String, String> params);
 
-  void addParametersFromString(String params) {
-    params.split('&').forEach((e) {
-      var t = e.split('=');
-      addParameter(t[0], t[1]);
-    });
-  }
+  /**
+   * Add some parameters for OAuth connection from a string.
+   * The string should be like 'param1=value1&param2=value2'.
+   */
+  void addParametersFromString(String params);
 
-  OAuth1Header get header {
-    _OAuth1Header h = new _OAuth1Header(parameters);
-    if (h.parameters['oauth_signature'] == null) h.parameters['oauth_signature'] = signature;
-    return h;
-  }
-
-  String get signature {
-    var hmac_sha1 = new HMAC(new SHA1(), _signatureKey.codeUnits);
-    hmac_sha1.add(_signatureValue.codeUnits);
-    return CryptoUtils.bytesToBase64(hmac_sha1.close());
-  }
-
-  String get _signatureKey => '${consumerSecret}&${tokenSecret}';
-
-  String get _signatureValue {
-    var sortedKeys = parameters.keys.toList()..sort();
-    var tmp = [];
-
-    sortedKeys.forEach((key) => tmp.add('${key}=${parameters[key]}'));
-
-    return '${method}&${Uri.encodeComponent(uri.toString())}&${Uri.encodeComponent(tmp.join('&'))}';
-  }
-
-  void _initAuthParams() {
-    parameters = {
-      'oauth_consumer_key': consumerKey,
-      'oauth_timestamp': _timestamp,
-      'oauth_nonce': _nonce,
-      'oauth_signature_method': 'HMAC-SHA1',
-      'oauth_version': OAuth1.VERSION
-    };
-
-    if (token != '') parameters['oauth_token'] = token;
-  }
 }
 
+/**
+ * Header class for OAuth connection.
+ */
 abstract class OAuth1Header {
-  Map<String, String> parameters;
 
-  OAuth1Header(this.parameters);
+  /**
+   * Gets the parameters for OAuth connection.
+   */
+  Map<String, String> get parameters;
 
+  /**
+   * Returns if the header is signed or not.
+   */
+  bool isSigned();
+
+  /**
+   * Sign the header and returns signature string.
+   * If the instance is already signed, this immidiately returns signature string.
+   */
+  String sign();
+
+  /**
+   * Returns OAuth authentication string, which will be used in
+   * 'Authorization' header.
+   * The value is like 'OAuth param1=value1&oauth_timestamp=...&oauth_...'
+   */
   String toString();
+
+  /**
+   * Construct header.
+   */
+  OAuth1Header(String method, Uri uri, Map<String, String> parameters,
+               String consumerSecret, String tokenSecret);
+
 }
