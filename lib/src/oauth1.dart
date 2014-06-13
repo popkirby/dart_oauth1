@@ -8,15 +8,50 @@ part of oauth1;
  * Only supports HMAC-SHA1 signature method now.
  */
 class OAuth1 {
+
+  /**
+   * version of OAuth, now only 1.0.
+   */
   static const VERSION = '1.0';
 
+  /**
+   * Gets and sets the consumer key. The value of this property will reflect
+   * 'oauth_consumer_key' value of OAuth header.
+   */
   String consumerKey;
+
+  /**
+   * Gets and sets the consumer secret key. The value of this property will be
+   * used in signature method.
+   */
   String consumerSecret;
+
+  /**
+   * Gets and sets the oauth token. The value of this property will be reflect
+   * 'oauth_token' value of OAuth header.
+   */
   String token;
+
+  /**
+   * Gets and sets the oauth token secret. The value of this property will be
+   * used in signature method.
+   */
   String tokenSecret;
+
+  /**
+   * Gets and sets the method for connection.
+   */
   String method;
+
+  /**
+   * Gets and sets the URI to connect.
+   */
   Uri uri;
-  Map<String, String> parameters;
+
+  /**
+   * Gets parameters for OAuth connection.
+   */
+  Map<String, String> get parameters;
 
   String _timestamp;
   String _nonce;
