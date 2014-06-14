@@ -4,7 +4,7 @@
 library oauth1_test;
 
 import 'package:unittest/unittest.dart';
-import 'package:dart_oauth1/oauth1.dart';
+import 'package:oauth1/oauth1.dart';
 
 part 'src/oauth1_test.dart';
 
