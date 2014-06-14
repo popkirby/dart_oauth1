@@ -12,7 +12,7 @@ Add following to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  dart_oauth:
+  oauth1:
     git: git://github.com/popkirby/dart_oauth.git
 ```
 
